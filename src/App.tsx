@@ -1,26 +1,55 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, Navigate } from "react-router-dom";
+import { Suspense, lazy, useContext } from "react";
+import Loader from "./components/Loader";
+import Login from "./pages/auth/Login";
+import { AuthContext } from "./contexts/AuthContext";
 
-function App() {
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Products = lazy(() => import("./pages/Products"));
+const Transaction = lazy(() => import("./pages/Transaction"));
+const Customers = lazy(() => import("./pages/Customers"));
+const NewProduct = lazy(() => import("./pages/management/NewProduct"));
+const ProductManagement = lazy(
+  () => import("./pages/management/ProductManagement")
+);
+const TransactionManagement = lazy(
+  () => import("./pages/management/TransactionManagement")
+);
+const Coupon = lazy(() => import("./pages/apps/Coupon"));
+const Toss = lazy(() => import("./pages/apps/Toss"));
+
+const App = () => {
+  const authContext: any = useContext(AuthContext);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Suspense fallback={<Loader />}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              authContext.isAuthenticated ? (
+                <Navigate to="/p8-admin/dashboard" replace={true} />
+              ) : (
+                <Navigate to="/p8-admin/auth/login" replace={true} />
+              )
+            }
+          />
+  
+          <Route path="/p8-admin/dashboard" element={<Dashboard />} />
+          <Route path="/p8-admin/cars" element={<Products />} />
+          <Route path="/p8-admin/cars/new" element={<NewProduct />} />
+          <Route path="/p8-admin/customer" element={<Customers />} />
+          <Route path="/p8-admin/transaction" element={<Transaction />} />
+          <Route path="/p8-admin/auth/login" element={<Login />} />
+  
+          {/* ... diğer rotalar ... */}
+          
+        </Routes>
+      </Suspense>
+    </Router>
   );
-}
+  
+};
 
 export default App;

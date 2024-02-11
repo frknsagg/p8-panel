@@ -1,0 +1,95 @@
+.login-page {
+  background-image: url("https://www.safakotokiralama.com/foto/6d3c936af7a4.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh; /* Sayfanın tamamını kaplaması için */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; /* Dikey düzen */
+  /* ... diğer stiller ... */
+}
+
+.login-card {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.login-container {
+  border: 2px solid wheat;
+  border-radius: 7px;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.card-title {
+  color: #495057;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.error-message {
+  color: #e44d26;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+.password-input {
+  position: relative;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+  font-size: 14px;
+}
+/* Belirli bir sınıfa sahip labellerin stili */
+.login-container label.login-label {
+  color: #fff;
+  font-size: 16px;
+  padding: 5px;
+  font-weight: 500;
+}
+/* Belirli bir sınıfa sahip butonun stili */
+.login-container button.enter-btn {
+  background-color: #007bff; 
+  border-color: #007bff;
+  color: #fff;
+  padding: 10px 20px; 
+  font-size: 16px; 
+  border-radius: 5px;
+  cursor: pointer; 
+  width: 100%;
+}
+
+/* Butonun hover durumunda stili */
+.login-container button.enter-btn:hover {
+  background-color: #0056b3; /* Butonun hover durumunda arka plan rengi */
+  border-color: #0056b3; /* Butonun hover durumunda kenarlık rengi */
+  /* Diğer hover durumu stillendirmeleri... */
+}
+.login-container h1.card-title {
+  font-size: 48px; /* Yazı tipi boyutu */
+  color: tan; /* Yazı rengi */
+  margin-bottom: 20px; /* Alt boşluk */
+  font-weight: bold; /* Yazı tipi kalınlığı */
+}
+
+/* Eğer belirli bir hover efekti istiyorsanız aşağıdaki kodu da ekleyebilirsiniz */
+.login-container h3.card-title:hover {
+  text-decoration: underline; /* Altını çizme efekti */
+}
