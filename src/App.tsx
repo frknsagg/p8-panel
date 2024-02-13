@@ -4,11 +4,13 @@ import Loader from "./components/Loader";
 import Login from "./pages/auth/Login";
 import { AuthContext } from "./contexts/AuthContext";
 
+
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Products = lazy(() => import("./pages/Products"));
 const Transaction = lazy(() => import("./pages/Transaction"));
 const Customers = lazy(() => import("./pages/Customers"));
 const NewProduct = lazy(() => import("./pages/management/NewProduct"));
+const NewBrand = lazy(() => import("./pages/management/NewBrand"));
 const ProductManagement = lazy(
   () => import("./pages/management/ProductManagement")
 );
@@ -39,6 +41,7 @@ const App = () => {
           <Route path="/p8-admin/dashboard" element={<Dashboard />} />
           <Route path="/p8-admin/cars" element={<Products />} />
           <Route path="/p8-admin/cars/new" element={<NewProduct />} />
+          <Route path="/p8-admin/brands/new" element={<NewBrand />} />
           <Route path="/p8-admin/customer" element={<Customers />} />
           <Route path="/p8-admin/transaction" element={<Transaction />} />
           <Route path="/p8-admin/auth/login" element={<Login />} />

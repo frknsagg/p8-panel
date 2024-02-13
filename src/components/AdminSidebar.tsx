@@ -90,6 +90,12 @@ const DivOne = ({ location }: { location: Location }) => (
         text="Araba Yönetimi"
         Icon={RiCarLine}
         location={location}
+        submenuItems={[
+          { url: "/p8-admin/brands/new", text: "Marka Yönetimi" },
+          { url: "/p8-admin/cars/new", text: "Model Yönetimi" },
+          { url: "/p8-admin/cars/new", text: "Renk Yönetimi" },
+          // Yeni alt menü öğelerini ekleyebilirsiniz
+        ]}
       />
       <Li
         url="/p8-admin/users"
@@ -106,6 +112,7 @@ const DivOne = ({ location }: { location: Location }) => (
     </ul>
   </div>
 );
+
 
 // const DivTwo = ({ location }: { location: Location }) => (
 //   <div>
@@ -140,25 +147,37 @@ interface LiProps {
   text: string;
   location: Location;
   Icon: IconType;
+  submenuItems?: Array<{ url: string; text: string }>; // Yeni prop
 }
-const Li = ({ url, text, location, Icon }: LiProps) => (
-  <li
-    style={{
-      backgroundColor: location.pathname.includes(url)
-        ? "rgba(0,115,255,0.1)"
-        : "white",
-    }}
-  >
-    <Link
-      to={url}
+const Li = ({ url, text, location, Icon, submenuItems }: LiProps) => {
+  const isActive = location.pathname.includes(url);
+
+  return (
+    <li
       style={{
-        color: location.pathname.includes(url) ? "rgb(0,115,255)" : "black",
+        backgroundColor: isActive ? "rgba(0,115,255,0.1)" : "white",
       }}
     >
-      <Icon />
-      {text}
-    </Link>
-  </li>
-);
+      <Link
+        to={url}
+        style={{
+          color: isActive ? "rgb(0,115,255)" : "black",
+        }}
+      >
+        <Icon />
+        {text}
+      </Link>
+      {submenuItems && isActive && (
+        <ul>
+          {submenuItems.map((submenuItem, index) => (
+            <li key={index}>
+              <Link to={submenuItem.url}>{submenuItem.text}</Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+};
 
 export default AdminSidebar;
