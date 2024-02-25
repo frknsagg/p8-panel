@@ -99,7 +99,7 @@ const NewProduct = () => {
 
   const validationSchema = Yup.object().shape({
     plate: Yup.string().required("Plaka alanı zorunludur"),
-    daily_price: Yup.number().required("Fiyat alanı zorunludur"),
+    dailyPrice: Yup.number().required("Fiyat alanı zorunludur"),
     kilometer: Yup.number().required("Kilometre alanı zorunludur"),
     year: Yup.number().required("Yıl alanı zorunludur"),
   });
@@ -108,8 +108,10 @@ const NewProduct = () => {
       // Form verilerini dönüştür
       const carData: CarModelAdd = {
         plate: values.plate,
-        daily_price: values.daily_price,
+        dailyPrice: values.dailyPrice,
         kilometer: values.kilometer,
+        file: values.photo,
+        carState :"AVAILABLE",
         year: values.year,
         colorId: values.selectedColorId,
         modelId: values.selectedModelId,
@@ -132,7 +134,7 @@ const NewProduct = () => {
     plate: "",
     selectedModelId : 0,
     selectedColorId: 0,
-    daily_price: 0,
+    dailyPrice: 0,
     kilometer: 0,
     year: 0,
   };
@@ -229,8 +231,8 @@ const NewProduct = () => {
               </div>
               <div>
                 <label>Fiyat</label>
-                <Field type="number" name="daily_price" placeholder="Fiyat" />
-                <ErrorMessage name="daily_price" component="div" />
+                <Field type="number" name="dailyPrice" placeholder="Fiyat" />
+                <ErrorMessage name="dailyPrice" component="div" />
               </div>
 
               <div>

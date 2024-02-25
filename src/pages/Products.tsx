@@ -87,9 +87,9 @@ const Products = () => {
       if (Array.isArray(response.data.data)) {
         const formattedProducts: DataType[] = response.data.data.map((car: CarModel) => ({
           id:car.id,
-          photo: <img src={img} alt="Shoes" />,
+          photo: <img src={car.imagePath} alt="Shoes" />,
           name: car.modelResponse.name,
-          price: car.daily_price,
+          price: car.dailyPrice,
           stock: car.kilometer,
           action: (
             <Dropdown className="btn btn-success">

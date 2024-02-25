@@ -1,7 +1,9 @@
 export interface CarModelAdd {
  
-    daily_price: number;
+    dailyPrice: number;
     kilometer: number;
+    carState:string;
+    file:File;
     plate: string;
     year: number;
     colorId: number;

@@ -4,6 +4,7 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import ModelService from '../../services/ModelService';
 import { BrandModelAdd } from '../../models/requests/BrandModelAdd';
 import BrandService from '../../services/BrandService';
+import UserService from '../../services/UserService';
 
 
 type Props = {}
@@ -11,24 +12,24 @@ type Props = {}
 
 
 const NewUser = (props: Props) => {
-    const brandService:BrandService = new BrandService();
+    const service: UserService = new UserService();
     const onSubmit = async (values: any) => {
-      try {
-       const brandModelData : BrandModelAdd = {
-         name : values.name,
-       }
+      // try {
+      //  const brandModelData : BrandModelAdd = {
+      //    name : values.name,
+      //  }
    
-       const response = await brandService.add(brandModelData);
+      //  const response = await service.add(brandModelData);
 
-       console.log('Brand added successfully:', response);
-       if (response.data && 'message' in response.data) {
-        alert(response.data.message);
-      } else {
-        console.error('Response does not contain a message property.');
-      }
-      } catch (error) {
+      //  console.log('Brand added successfully:', response);
+      //  if (response.data && 'message' in response.data) {
+      //   alert(response.data.message);
+      // } else {
+      //   console.error('Response does not contain a message property.');
+      // }
+      // } catch (error) {
        
-      }
+      // }
      };
    
    const initialValues = {

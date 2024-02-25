@@ -146,7 +146,7 @@ const EditCar = () => {
     plate: car?.plate,
     selectedModelId : car?.modelResponse.id,
     selectedColorId: car?.colorResponse.id,
-    daily_price: car?.daily_price,
+    daily_price: car?.dailyPrice,
     kilometer: car?.kilometer,
     year: car?.year,
   };
@@ -240,7 +240,7 @@ const EditCar = () => {
               </div>
               <div>
                 <label>Fiyat</label>
-                <Field type="number" name="daily_price" placeholder={car?.daily_price}/>
+                <Field type="number" name="daily_price" placeholder={car?.dailyPrice}/>
                 <ErrorMessage name="daily_price" component="div" />
               </div>
 
