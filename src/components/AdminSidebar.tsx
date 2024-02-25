@@ -91,9 +91,8 @@ const DivOne = ({ location }: { location: Location }) => (
         Icon={RiCarLine}
         location={location}
         submenuItems={[
-          { url: "/p8-admin/brands/new", text: "Marka Yönetimi" },
-          { url: "/p8-admin/cars/new", text: "Model Yönetimi" },
-          { url: "/p8-admin/cars/new", text: "Renk Yönetimi" },
+          { url: "/p8-admin/brands", text: "Marka Yönetimi" },
+          { url: "/p8-admin/models", text: "Model Yönetimi" }
           // Yeni alt menü öğelerini ekleyebilirsiniz
         ]}
       />

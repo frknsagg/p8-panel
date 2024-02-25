@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { CarModel } from '../models/responses/CarModel';
 import { CarModelAdd } from '../models/requests/CarModelAdd';
+import { CarModelUpdate } from '../models/requests/CarModelUpdate';
 
 class CarService {
   async getAll(): Promise<AxiosResponse<any>> {
@@ -47,6 +48,23 @@ class CarService {
       return response;
     } catch (error) {
       console.error('Error adding car:', error);
+      throw error;
+    }
+  }
+  async update(carData: CarModelUpdate): Promise<AxiosResponse<{ data: CarModelUpdate }>> {
+    try {
+      const response = await axios.put<{ data: CarModelUpdate }>(
+        "http://localhost:8080/api/cars/update",
+        JSON.stringify(carData),
+        {
+          headers: {
+            "Content-Type": "application/json", 
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      console.error("Error adding car:", error);
       throw error;
     }
   }

@@ -2,37 +2,29 @@ import { ReactElement, useCallback, useEffect, useState } from "react";
 import AdminSidebar from "../components/AdminSidebar";
 import TableHOC from "../components/TableHOC";
 import { Column } from "react-table";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
-import { CarModel } from "../models/responses/CarModel";
-import CarService from "../services/CarService";
 import { Dropdown, DropdownMenu } from "react-bootstrap";
+import { BrandModel } from "../models/responses/BrandModel";
+import UserService from "../services/UserService";
+import { UserModel } from "../models/responses/UserModel";
 
 interface DataType {
   id:number;
-  photo: ReactElement;
   name: string;
-  price: number;
-  stock: number;
+  email:string;
   action: ReactElement;
 }
 
 const columns: Column<DataType>[] = [
+  
   {
-    Header: "Foto",
-    accessor: "photo",
-  },
-  {
-    Header: "Araç Modeli",
+    Header: "FullName",
     accessor: "name",
   },
   {
-    Header: "Fiyat",
-    accessor: "price",
-  },
-  {
-    Header: "Kilometre",
-    accessor: "stock",
+    Header: "Email",
+    accessor: "email",
   },
   {
     Header: "İşlemler",
@@ -40,35 +32,34 @@ const columns: Column<DataType>[] = [
   },
 ];
 
-const img =
-  "https://imageio.forbes.com/specials-images/imageserve/5d35eacaf1176b0008974b54/0x0.jpg?format=jpg&crop=4560,2565,x790,y784,safe&height=900&width=1600&fit=bounds";
 
 
-
-const Products = () => {
-  let service: CarService = new CarService();
-  const handleEditClick = (carId : number) => () => {
-    // Edit işlemleri
-    console.log(`Edit car with ID: ${carId}`);
-  };
+const Users = () => {
+  let service: UserService = new UserService();
   
+  const handleEditClick = (userId: number) => () => {
+    // EditBrand sayfasına yönlendir ve ID'yi gönder
+    <Navigate to= "/p8-admin/users/edit/${brandId}" replace={true} />
+  };
 
-  const handleDeleteClick = async (carId: number) => {
-    const userConfirmed = window.confirm("Bu aracı silmek istediğinize emin misiniz?");
+  const handleDeleteClick = async (userId: number) => {
+    const userConfirmed = window.confirm("Bu kullanıcıyı silmek istediğinize emin misiniz?");
   
     if (userConfirmed) {
       try {
         // Delete işlemleri
-        const response = await service.deleteById(carId);
-        console.log(`Car with ID ${carId} deleted successfully.`, response);
+        const response = await service.deleteById(userId);
+        console.log(`User with ID ${userId} deleted successfully.`, response);
+
+        alert("Marka Başarıyla Silindi.!!")
   
         // Silme işlemi başarılı olduktan sonra verileri tekrar çek ve state'i güncelle
       
       } catch (error) {
-        console.error(`Error deleting car with ID ${carId}:`, error);
+        console.error(`Error deleting car with ID ${userId}:`, error);
       }
       finally{
-        fetchProducts();
+        fetchBrands();
         console.log("Silme işlemi başarılı");
       }
     } else {
@@ -80,28 +71,26 @@ const Products = () => {
   
   const [data, setData] = useState<DataType[]>([]);
 
-  const fetchProducts = async () => {
+  const fetchBrands = async () => {
     try {
       
       const response = await service.getAll();
       if (Array.isArray(response.data.data)) {
-        const formattedProducts: DataType[] = response.data.data.map((car: CarModel) => ({
-          id:car.id,
-          photo: <img src={img} alt="Shoes" />,
-          name: car.modelResponse.name,
-          price: car.daily_price,
-          stock: car.kilometer,
+        const formattedProducts: DataType[] = response.data.data.map((user: UserModel) => ({
+          id:user.id,
+          name: user.name + " " + user.surname,
+          email:user.email,
           action: (
             <Dropdown className="btn btn-success">
-              <Dropdown.Toggle variant="success" id={`dropdown-${car.id}`}>
+              <Dropdown.Toggle variant="success" id={`dropdown-${user.id}`}>
                 Yönet
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item as={Link} to={`/admin/product/${car.id}`}>
+                <Dropdown.Item as={Link} to={`/admin/users/${user.id}`}>
                   Detaylarını İncele
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to={`/p8-admin/cars/edit/${car.id}`}>Düzenle</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleDeleteClick(car.id)}>Sil</Dropdown.Item>
+                <Dropdown.Item  as={Link} to={`/p8-admin/users/edit/${user.id}`}>Düzenle</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleDeleteClick(user.id)}>Sil</Dropdown.Item>
 
               </Dropdown.Menu>
             </Dropdown>
@@ -118,7 +107,7 @@ const Products = () => {
   
   
   useEffect(() => {
-    fetchProducts();
+    fetchBrands();
   }, []);
   
   
@@ -137,11 +126,11 @@ const Products = () => {
     <div className="admin-container">
       <AdminSidebar />
       <main>{Table()}</main>
-      <Link to="/p8-admin/cars/new" className="create-product-btn">
+      <Link to="/p8-admin/users/new" className="create-product-btn">
         <FaPlus />
       </Link>
     </div>
   );
 };
 
-export default Products;
+export default Users;

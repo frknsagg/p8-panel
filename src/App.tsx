@@ -3,6 +3,13 @@ import { Suspense, lazy, useContext } from "react";
 import Loader from "./components/Loader";
 import Login from "./pages/auth/Login";
 import { AuthContext } from "./contexts/AuthContext";
+import EditBrand from "./pages/management/EditBrand";
+import EditCar from "./pages/management/EditCar";
+import Colors from "./pages/Colors";
+import Models from "./pages/Models";
+import EditModel from "./pages/management/EditModel";
+import NewModel from "./pages/management/NewModel";
+import Users from "./pages/Users";
 
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -10,6 +17,7 @@ const Products = lazy(() => import("./pages/Products"));
 const Transaction = lazy(() => import("./pages/Transaction"));
 const Customers = lazy(() => import("./pages/Customers"));
 const NewProduct = lazy(() => import("./pages/management/NewProduct"));
+const Brand = lazy(() => import("./pages/Brands"));
 const NewBrand = lazy(() => import("./pages/management/NewBrand"));
 const ProductManagement = lazy(
   () => import("./pages/management/ProductManagement")
@@ -41,7 +49,14 @@ const App = () => {
           <Route path="/p8-admin/dashboard" element={<Dashboard />} />
           <Route path="/p8-admin/cars" element={<Products />} />
           <Route path="/p8-admin/cars/new" element={<NewProduct />} />
+          <Route path="/p8-admin/cars/edit/:id" element={<EditCar />} />
           <Route path="/p8-admin/brands/new" element={<NewBrand />} />
+          <Route path="/p8-admin/brands/edit/:id" element={<EditBrand />} />
+          <Route path="/p8-admin/brands/" element={<Brand />} />
+          <Route path="/p8-admin/models/" element={<Models/>} />
+          <Route path="/p8-admin/models/new" element={<NewModel/>} />
+          <Route path="/p8-admin/models/edit/:id" element={<EditModel/>} />
+          <Route path="/p8-admin/users/" element={<Users/>} />
           <Route path="/p8-admin/customer" element={<Customers />} />
           <Route path="/p8-admin/transaction" element={<Transaction />} />
           <Route path="/p8-admin/auth/login" element={<Login />} />
