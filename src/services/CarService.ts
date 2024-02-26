@@ -34,14 +34,14 @@ class CarService {
     }
   }
 
-  async add(carData: CarModelAdd): Promise<AxiosResponse<{ data: CarModel }>> {
+  async add(formData: FormData): Promise<AxiosResponse<{ data: CarModel }>> {
     try {
       const response = await axios.post<{ data: CarModel }>(
         'http://localhost:8080/api/cars/add',
-        JSON.stringify(carData), // carData'yı JSON formatına dönüştür
+        formData,
         {
           headers: {
-            'Content-Type': 'application/json', // JSON verisi gönderildiği belirtiliyor
+            'Content-Type': 'multipart/form-data', // FormData olduğu için content type multipart/form-data olmalı
           },
         }
       );

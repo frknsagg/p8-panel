@@ -9,7 +9,6 @@ import * as Yup from "yup";
 import CarService from "../../services/CarService";
 import ColorService from "../../services/ColorService";
 import { ColorModel } from "../../models/responses/ColorModel";
-import { CarModelAdd } from "../../models/requests/CarModelAdd";
 
 const NewProduct = () => {
   let brandService: BrandService = new BrandService();
@@ -17,24 +16,12 @@ const NewProduct = () => {
   let carService: CarService = new CarService();
   let colorService: ColorService = new ColorService();
 
-  const [photo, setPhoto] = useState<string>();
+  const [photo, setPhoto] = useState<File | null>(null);
 
   const [selectedBrandId, setSelectedBrandId] = useState(0);
   const [selectedModelId, setSelectedModelId] = useState(0);
   const [selectedColorId, setSelectedColorId] = useState(0);
 
-  const changeImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    const file: File | undefined = e.target.files?.[0];
-
-    const reader: FileReader = new FileReader();
-
-    if (file) {
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        if (typeof reader.result === "string") setPhoto(reader.result);
-      };
-    }
-  };
   const [brands, setBrands] = useState<BrandModel[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   const [colors, setColors] = useState<ColorModel[]>([]);
@@ -43,58 +30,44 @@ const NewProduct = () => {
     try {
       const colorsResponse = await colorService.getAll();
       const fetchedColors = colorsResponse.data.data;
-
       setColors(fetchedColors);
     } catch (error) {
-      console.error("Error fetching brands:", error);
+      console.error("Error fetching colors:", error);
+      // Hata durumunu kullanıcıya bildirebilirsiniz
     }
   };
 
   const fetchBrands = async () => {
     try {
       const brandsResponse = await brandService.getAll();
-
-      // Markaların bulunduğu bir dizi
       const fetchedBrands = brandsResponse.data.data;
-
-      // Markaları state'e set et
       setBrands(fetchedBrands);
-
-      // Diğer işlemleri gerçekleştir...
     } catch (error) {
       console.error("Error fetching brands:", error);
+      // Hata durumunu kullanıcıya bildirebilirsiniz
     }
   };
 
   useEffect(() => {
     fetchColors();
-    console.log(colors);
     fetchBrands();
-  }, [models]);
-  
+  }, []);
 
   const fetchModelsByBrandId = async (brandId: number) => {
     try {
       const response = await modelService.getByBrandId(brandId);
-      // Markaların bulunduğu bir dizi
       const fetchedModels = response.data.data;
-
-      // Markaları state'e set et
       setModels(fetchedModels);
     } catch (error) {
       console.error("Error fetching models:", error);
+      // Hata durumunu kullanıcıya bildirebilirsiniz
     }
   };
 
-  const handleBrandChange = (e: any) => {
-    const brandId = e.target.value;
+  const handleBrandChange = async (e: ChangeEvent<HTMLSelectElement>) => {
+    const brandId = parseInt(e.target.value, 10);
     setSelectedBrandId(brandId);
-    fetchModelsByBrandId(parseInt(brandId, 10));
-  };
-
-  const handleModelChange = (e: any) => {
-    const modelId = e.target.value;
-    setSelectedModelId(modelId);
+    fetchModelsByBrandId(brandId);
   };
 
   const validationSchema = Yup.object().shape({
@@ -102,163 +75,161 @@ const NewProduct = () => {
     dailyPrice: Yup.number().required("Fiyat alanı zorunludur"),
     kilometer: Yup.number().required("Kilometre alanı zorunludur"),
     year: Yup.number().required("Yıl alanı zorunludur"),
+    photo: Yup.mixed().required("Fotoğraf alanı zorunludur"),
   });
-  const onSubmit = async (values: any) => {
-    try {
-      // Form verilerini dönüştür
-      const carData: CarModelAdd = {
-        plate: values.plate,
-        dailyPrice: values.dailyPrice,
-        kilometer: values.kilometer,
-        file: values.photo,
-        carState :"AVAILABLE",
-        year: values.year,
-        colorId: values.selectedColorId,
-        modelId: values.selectedModelId,
-      };
-  
-      // CarService.add() ile gönder
-      const response = await carService.add(carData);
-  
-      // Sunucudan gelen yanıtı işleyebilirsiniz (isteğe bağlı)
-      console.log('Car added successfully:', response);
-  
-    } catch (error) {
-      // Hata durumunda hata mesajını ve detaylarını göster
-      console.error('Car add failed:', error);
-    }
-  };
-  
 
   const initialValues = {
     plate: "",
-    selectedModelId : 0,
+    selectedModelId: 0,
     selectedColorId: 0,
     dailyPrice: 0,
     kilometer: 0,
     year: 0,
+    photo: null,
   };
-  
+
+  const onSubmit = async (values: any) => {
+    try {
+      const formData = new FormData();
+      formData.append('carState', 'AVAILABLE');
+      formData.append("file", values.photo);
+      formData.append("plate", values.plate);
+      formData.append("brandId", selectedBrandId.toString());
+      formData.append("modelId", selectedModelId.toString());
+      formData.append("colorId", selectedColorId.toString());
+      formData.append("dailyPrice", values.dailyPrice.toString());
+      formData.append("kilometer", values.kilometer.toString());
+      formData.append("year", values.year.toString());
+
+      await carService.add(formData);
+      alert("Araç başarıyla eklendi");
+    } catch (error) {
+      console.error("Error adding car:", error);
+      alert("Araç eklenirken bir hata oluştu");
+    }
+  };
+
   return (
     <div className="admin-container">
       <AdminSidebar />
       <main className="product-management">
         <article>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={(values, { resetForm }) => {
-            onSubmit(values);
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(values, { resetForm }) => {
+              onSubmit(values);
+              resetForm({ values: initialValues });
+            }}
+          >
+            {({ values, setFieldValue }) => (
+              <Form>
+                <h2>YENİ ARAÇ</h2>
 
-            // Örnek olarak formu sıfırla ve başlangıç değerlerini atayabilirsin
-            resetForm({
-              values: initialValues,
-            });
-          }}
-        >
-          {({ values, setFieldValue }) => (
-            <Form>
-              <h2>YENİ ARAÇ</h2>
+                <div>
+                  <label>plate</label>
+                  <Field type="text" name="plate" placeholder="plate" />
+                  <ErrorMessage name="plate" component="div" />
+                </div>
 
-              <div>
-                <label>plate</label>
-                <Field type="text" name="plate" placeholder="plate" />
-                <ErrorMessage name="plate" component="div" />
-              </div>
-
-              <div>
-                <label>Markasını Seçin</label>
-                <Field
-                  as="select"
-                  name="selectedBrandId"
-                  onChange={(e : any) => {
-                    handleBrandChange(e);
-                    setFieldValue('selectedBrandId', parseInt(e.target.value, 10));
-                  }}
-                >
-                  <option value="" disabled>
-                    Seç
-                  </option>
-                  {brands.map((brand) => (
-                    <option key={brand.id} value={brand.id}>
-                      {brand.name}
+                <div>
+                  <label>Markasını Seçin</label>
+                  <Field
+                    as="select"
+                    name="selectedBrandId"
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      handleBrandChange(e);
+                      setFieldValue("selectedBrandId", e.target.value);
+                    }}
+                  >
+                    <option value="" disabled>
+                      Seç
                     </option>
-                  ))}
-                </Field>
-                <ErrorMessage name="selectedBrandId" component="div" />
-              </div>
-              <div>
-                <label>Modelini Seçin</label>
-                <Field
-                  as="select"
-                  name="selectedModelId"
-                  onChange={(e : any) => {
-                    console.log("model değişti", e.target.value);
-                    setFieldValue('selectedModelId', parseInt(e.target.value, 10));
-                  }}
-                >
-                  <option value="" disabled>
-                    Seç
-                  </option>
-                  {models.map((model) => (
-                    <option key={model.id} value={model.id}>
-                      {model.name}
+                    {brands.map((brand) => (
+                      <option key={brand.id} value={brand.id}>
+                        {brand.name}
+                      </option>
+                    ))}
+                  </Field>
+                  <ErrorMessage name="selectedBrandId" component="div" />
+                </div>
+                <div>
+                  <label>Modelini Seçin</label>
+                  <Field
+                    as="select"
+                    name="selectedModelId"
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      setSelectedModelId(parseInt(e.target.value, 10));
+                      setFieldValue("selectedModelId", e.target.value);
+                    }}
+                  >
+                    <option value="" disabled>
+                      Seç
                     </option>
-                  ))}
-                </Field>
-                <ErrorMessage name="selectedModelId" component="div" />
-              </div>
-              <div>
-                <label>Renk Seçin</label>
-                <Field
-                  as="select"
-                  name="selectedColorId"
-                  onChange={(e : any) => {
-                    console.log("renk değişti değişti", e.target.value);
-                    setFieldValue('selectedColorId', parseInt(e.target.value, 10));
-                  }}
-                >
-                  <option value="" disabled>
-                    Seç
-                  </option>
-                  {colors.map((color) => (
-                    <option key={color.id} value={color.id}>
-                      {color.name}
+                    {models.map((model) => (
+                      <option key={model.id} value={model.id}>
+                        {model.name}
+                      </option>
+                    ))}
+                  </Field>
+                  <ErrorMessage name="selectedModelId" component="div" />
+                </div>
+                <div>
+                  <label>Renk Seçin</label>
+                  <Field
+                    as="select"
+                    name="selectedColorId"
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      setSelectedColorId(parseInt(e.target.value, 10));
+                      setFieldValue("selectedColorId", e.target.value);
+                    }}
+                  >
+                    <option value="" disabled>
+                      Seç
                     </option>
-                  ))}
-                </Field>
-                <ErrorMessage name="selectedModelId" component="div" />
-              </div>
-              <div>
-                <label>Fiyat</label>
-                <Field type="number" name="dailyPrice" placeholder="Fiyat" />
-                <ErrorMessage name="dailyPrice" component="div" />
-              </div>
+                    {colors.map((color) => (
+                      <option key={color.id} value={color.id}>
+                        {color.name}
+                      </option>
+                    ))}
+                  </Field>
+                  <ErrorMessage name="selectedColorId" component="div" />
+                </div>
+                <div>
+                  <label>Fiyat</label>
+                  <Field type="number" name="dailyPrice" placeholder="Fiyat" />
+                  <ErrorMessage name="dailyPrice" component="div" />
+                </div>
 
-              <div>
-                <label>Kilometre</label>
-                <Field type="number" name="kilometer" placeholder="Kilometre" />
-                <ErrorMessage name="kilometer" component="div" />
-              </div>
+                <div>
+                  <label>Kilometre</label>
+                  <Field type="number" name="kilometer" placeholder="Kilometre" />
+                  <ErrorMessage name="kilometer" component="div" />
+                </div>
 
-              <div>
-                <label>Year</label>
-                <Field type="number" name="year" placeholder="Yıl" />
-                <ErrorMessage name="year" component="div" />
-              </div>
+                <div>
+                  <label>Year</label>
+                  <Field type="number" name="year" placeholder="Yıl" />
+                  <ErrorMessage name="year" component="div" />
+                </div>
 
-              <div>
-                <label>Photo</label>
-                <Field type="file" name="photo" onChange={changeImageHandler} />
-                <ErrorMessage name="photo" component="div" />
-              </div>
+                <div>
+                  <label>Photo</label>
+                  <input
+                    type="file"
+                    name="photo"
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setPhoto(e.target.files ? e.target.files[0] : null);
+                      setFieldValue("photo", e.currentTarget.files ? e.currentTarget.files[0] : null);
+                    }}
+                  />
+                  <ErrorMessage name="photo" component="div" />
+                </div>
 
-              {/* Diğer form alanları ve butonlar... */}
-
-              <button type="submit">Kaydet</button>
-            </Form>
-          )}
-        </Formik>
+                <button type="submit">Kaydet</button>
+              </Form>
+            )}
+          </Formik>
         </article>
       </main>
     </div>
